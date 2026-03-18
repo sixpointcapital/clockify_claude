@@ -1,0 +1,41 @@
+# ClockyfI Configuration
+# Each user customizes this file for their own setup.
+
+# How often to capture a snapshot of what you're working on (in minutes)
+capture_interval_minutes: 10
+
+# Skip capturing when user has been idle for this long (in minutes)
+idle_threshold_minutes: 5
+
+# How to merge similar consecutive activities into blocks (in minutes)
+# e.g., 50 means consecutive similar activities within 50 min become one entry
+merge_window_minutes: 50
+
+# Collectors: toggle on/off which sources to capture
+collectors:
+  active_window: true
+  calendar: true
+  browser: false      # Phase 2
+  slack: false         # Phase 2
+  git: false           # Phase 3
+  filesystem: false    # Phase 3
+
+# Calendar settings
+calendar:
+  # Option 1: Paste your Outlook/Google iCal URL (recommended — works everywhere)
+  # Outlook: Settings → Calendar → Shared calendars → Publish a calendar → ICS link
+  # Google: Settings → Calendar → Secret address in iCal format
+  ical_url: ""
+  # Option 2: Use icalBuddy (macOS only, requires: brew install ical-buddy)
+  use_icalbuddy: false
+
+# Clockify settings
+clockify:
+  # Default project ID to use when no match is found
+  default_project_id: ""
+  # Map keywords to Clockify project IDs for faster matching
+  # The LLM will also use the full project list from the API
+  project_hints: {}
+    # example:
+    # aurora: "project-id-for-aurora"
+    # internal: "project-id-for-internal"

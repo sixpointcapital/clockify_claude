@@ -1,0 +1,37 @@
+{
+  "name": "clockyfi",
+  "version": "0.1.0",
+  "description": "Smart time-tracking CLI that auto-detects work activities and publishes to Clockify",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "clockyfi": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@modelcontextprotocol/sdk": "^1.27.0",
+    "better-sqlite3": "^11.7.0",
+    "cli-table3": "^0.6.5",
+    "commander": "^13.1.0",
+    "dotenv": "^16.4.0",
+    "inquirer": "^12.3.0",
+    "js-yaml": "^4.1.0",
+    "node-cron": "^3.0.3",
+    "node-ical": "^0.25.6",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.12.0",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
