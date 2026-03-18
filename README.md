@@ -87,10 +87,9 @@ Talk to Claude naturally. No commands to memorize.
 
 ## Calendar setup
 
-Paste your calendar's iCal URL into `config.yaml` and your meetings show up automatically:
+Paste your Outlook calendar's iCal URL into `config.yaml` and your meetings show up automatically:
 
-- **Outlook** — Settings → Calendar → Shared calendars → Publish → Copy ICS link
-- **Google** — Settings → Calendar → Secret address in iCal format
+- **Outlook** — Settings → Calendar → Shared calendars → Publish a calendar → Copy ICS link
 
 ## What are context tags?
 
