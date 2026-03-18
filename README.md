@@ -61,7 +61,7 @@ Talk to Claude naturally. No commands to memorize.
               ┌──────────┴──────────┐
               ▼                     ▼
         Active Window          Calendar
-      (app, tab, URL)     (Outlook)
+      (app, tab, URL)       (Outlook)
               │                     │
               └──────────┬──────────┘
                          ▼
