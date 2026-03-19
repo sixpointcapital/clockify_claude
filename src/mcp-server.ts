@@ -74,9 +74,18 @@ server.tool(
     captureInterval = setInterval(async () => {
       try {
         const idleSeconds = getIdleTimeSeconds();
-        if (idleSeconds >= idleThreshold) return; // user is idle, skip
+        if (idleSeconds >= idleThreshold) {
+          await server.sendLoggingMessage({ level: "debug", data: `Idle ${Math.floor(idleSeconds / 60)}m — skipping capture.` });
+          return;
+        }
         await takeSnapshot();
-        await processSnapshots();
+        const entry = await processSnapshots();
+        if (entry) {
+          await server.sendLoggingMessage({
+            level: "info",
+            data: `Captured: "${entry.description}" (${entry.project_name || "no project"})`,
+          });
+        }
       } catch {
         // Silent — entries will be reviewed later
       }
@@ -533,9 +542,18 @@ await server.connect(transport);
   captureInterval = setInterval(async () => {
     try {
       const idleSeconds = getIdleTimeSeconds();
-      if (idleSeconds >= idleThreshold) return;
+      if (idleSeconds >= idleThreshold) {
+        await server.sendLoggingMessage({ level: "debug", data: `Idle ${Math.floor(idleSeconds / 60)}m — skipping capture.` });
+        return;
+      }
       await takeSnapshot();
-      await processSnapshots();
+      const entry = await processSnapshots();
+      if (entry) {
+        await server.sendLoggingMessage({
+          level: "info",
+          data: `Captured: "${entry.description}" (${entry.project_name || "no project"})`,
+        });
+      }
     } catch {
       // Silent — entries will be reviewed later
     }
