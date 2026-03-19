@@ -2,7 +2,7 @@
 
 **Your AI fills out your timesheet.** Clockify Claude runs inside Claude Code, watches what you're working on, and builds your Clockify timesheet automatically.
 
-No browser tabs. No manual entries. No forgetting to log time. Just work — your AI handles the rest.
+No browser tabs. No manual entries. No forgetting to log time. Just open Claude Code at the start of your day and it records everything — your meetings, your code, your emails, your Slack conversations. At the end of the day, review and publish. That's it.
 
 ## What it looks like
 
