@@ -102,7 +102,7 @@ Every entry includes a tag showing *where* you worked:
 | `[claude-code]` | Terminal / CLI development |
 | `[yourapp.company.com]` | Browser on that domain |
 | `[excel-desktop]` | Desktop Excel |
-| `[teams]` | Zoom meeting |
+| `[teams]` | Teams meeting |
 | `[slack]` | Slack conversation |
 | `[github.com]` | GitHub in browser |
 
