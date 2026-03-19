@@ -1,8 +1,8 @@
 # Clockify Claude
 
-**Your AI fills out your timesheet.** Clockify Claude runs inside Claude Code, watches what you're working on, and builds your Clockify timesheet automatically.
+An [MCP server](https://modelcontextprotocol.io/) for [Claude Code](https://claude.ai/claude-code) that automatically fills out your [Clockify](https://clockify.me) timesheet.
 
-No browser tabs. No manual entries. No forgetting to log time. Just open Claude Code at the start of your day and it records everything — your meetings, your code, your emails, your Slack conversations. At the end of the day, review and publish. That's it.
+It watches what you're working on — your active window, browser tabs, terminal, calendar — and builds time entries automatically. No browser tabs. No manual entries. No forgetting to log time. Just open Claude Code at the start of your day and it handles everything. At the end of the day, review and publish. That's it.
 
 ## What it looks like
 
@@ -21,18 +21,23 @@ Done: 3 published, 0 failed.
 
 That's it. Three hours of work, logged in two sentences.
 
+## Requirements
+
+- **[Claude Code](https://claude.ai/claude-code)** — this is an MCP server, it only works inside Claude Code. You need an active subscription (Pro, Team, or Enterprise). Install: `npm install -g @anthropic-ai/claude-code`
+- **[Clockify](https://clockify.me) account** — you need an API key and workspace ID from Clockify
+- Node.js 18+
+- macOS
+
 ## Quick Start
 
 ```bash
 git clone https://github.com/sixpointcapital/clockify_claude.git
 cd clockify_claude
 npm install
-cp .env.example .env    # Set up your environment variables
-open .env        # macOS
-notepad .env     # Windows
+cp .env.example .env
 ```
 
-Add your keys to `.env`:
+Add your Clockify credentials to `.env`:
 
 ```env
 CLOCKIFY_API_KEY=your-clockify-api-key
@@ -106,13 +111,6 @@ Every entry includes a tag showing *where* you worked:
 | `[github.com]` | GitHub in browser |
 
 These come from your actual activity — the AI reads your window title, URL, or app name and tags accordingly.
-
-## Requirements
-
-- **[Claude Code](https://claude.ai/claude-code)** — this project runs as an MCP server inside Claude Code. You need an active Claude Code subscription (Pro, Team, or Enterprise). Install it first if you haven't: `npm install -g @anthropic-ai/claude-code`
-- Node.js 18+
-- macOS
-- [Clockify](https://clockify.me) account
 
 ## License
 
