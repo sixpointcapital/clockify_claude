@@ -35,6 +35,8 @@ git clone https://github.com/sixpointcapital/clockify_claude.git
 cd clockify_claude
 npm install
 cp .env.example .env
+open .env        # macOS Set your Clockfy APIS here here
+notepad .env     # Windows
 ```
 
 Add your Clockify credentials to `.env`:
