@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+config.yaml
 *.db
 *.db-shm
 *.db-wal

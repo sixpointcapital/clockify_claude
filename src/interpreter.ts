@@ -52,12 +52,12 @@ Rules:
 - BE SPECIFIC. Include concrete details from the snapshot: repo names, site domains, file names, document titles, meeting names.
 - ALWAYS append a short context tag showing WHERE the work happened. Format: "description [context]"
   - For terminals/CLI: [claude-code], [terminal], [ssh]
-  - For browsers: use the shortened domain [app.sixpoint.io], [github.com], [docs.google.com]
+  - For browsers: use the shortened domain [yourapp.company.com], [github.com], [docs.google.com]
   - For desktop apps: [excel-desktop], [word-desktop], [powerpoint-desktop]
   - For online apps: [excel-online], [google-sheets]
   - For meetings: [zoom], [teams], [google-meet]
   - For email: [outlook], [gmail]
-- Good: "Admin dashboard configuration [app.sixpoint.io]" or "Fixing API rate limits in clockyfi_mcp [claude-code]"
+- Good: "Admin dashboard configuration [yourapp.company.com]" or "Fixing API rate limits in clockyfi_mcp [claude-code]"
 - Bad: "Code development and account management work" or "SixPoint platform administration and data analysis"
 - If in a terminal/IDE, extract the repo or project name from the window title or path.
 - If in a browser, include the site domain and page context.
