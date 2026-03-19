@@ -13,11 +13,12 @@ dotenvConfig({ path: resolve(projectDir, ".env") });
 process.chdir(projectDir);
 
 import { loadConfig } from "./config.js";
-import { takeSnapshot, processSnapshots } from "./capture.js";
+import { takeSnapshot } from "./capture.js";
 import { getIdleTimeSeconds } from "./collectors/idle.js";
 import {
   getEntriesToday,
   getEntriesByStatus,
+  getUnprocessedSnapshots,
   updateEntryStatus,
   updateEntry,
   deleteEntry,
@@ -60,15 +61,6 @@ server.tool(
     const snapshots = await takeSnapshot();
     let firstResult = `Took ${snapshots.length} snapshot(s).`;
 
-    try {
-      const entry = await processSnapshots();
-      if (entry) {
-        firstResult += ` Interpreted: "${entry.description}" (${entry.project_name || "no project"})`;
-      }
-    } catch (err) {
-      firstResult += ` Interpretation skipped: ${(err as Error).message}`;
-    }
-
     // Schedule recurring captures (skip if user is idle)
     const idleThreshold = (config.idle_threshold_minutes ?? 5) * 60;
     captureInterval = setInterval(async () => {
@@ -78,25 +70,22 @@ server.tool(
           await server.sendLoggingMessage({ level: "debug", data: `Idle ${Math.floor(idleSeconds / 60)}m — skipping capture.` });
           return;
         }
-        await takeSnapshot();
-        const entry = await processSnapshots();
-        if (entry) {
-          const start = new Date(entry.start_time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-          const end = new Date(entry.end_time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+        const snaps = await takeSnapshot();
+        if (snaps.length > 0) {
           await server.sendLoggingMessage({
             level: "info",
-            data: `${start} - ${end} | ${entry.description} | ${entry.project_name || "no project"}`,
+            data: `Captured ${snaps.length} snapshot(s) — use get_unprocessed_snapshots to interpret.`,
           });
         }
       } catch {
-        // Silent — entries will be reviewed later
+        // Silent — snapshots will be processed later
       }
     }, interval * 60 * 1000);
 
     return {
       content: [{
         type: "text",
-        text: `Tracking started — capturing every ${interval} minutes.\n${firstResult}\nI'll quietly track in the background. Ask me to "show status" or "review entries" anytime.`,
+        text: `Tracking started — capturing every ${interval} minutes.\n${firstResult}\nI'll quietly capture in the background. Use get_unprocessed_snapshots to interpret activity and create entries.`,
       }],
     };
   }
@@ -122,7 +111,7 @@ server.tool(
 
 server.tool(
   "capture_now",
-  "Take a snapshot of current activity right now and interpret it.",
+  "Take a snapshot of current activity right now. Returns raw activity data for you to interpret and create a time entry from using add_manual_entry.",
   {},
   async () => {
     const snapshots = await takeSnapshot();
@@ -134,15 +123,47 @@ server.tool(
     for (const s of snapshots) {
       result += `  [${s.collector}] ${s.raw_data}\n`;
     }
+    result += `\nSnapshot IDs: ${snapshots.map(s => s.id).join(",")}`;
+    result += `\nInterpret this activity and create a time entry using add_manual_entry.`;
 
-    try {
-      const entry = await processSnapshots();
-      if (entry) {
-        result += `\nInterpreted as: "${entry.description}"\nProject: ${entry.project_name || "(none)"}\nTask: ${entry.task_name || "(none)"}\nStatus: draft — use review_entries to approve.`;
-      }
-    } catch (err) {
-      result += `\nCould not interpret: ${(err as Error).message}`;
+    return { content: [{ type: "text", text: result }] };
+  }
+);
+
+// ─── Tool: get_unprocessed_snapshots ────────────────────────────────────────
+
+server.tool(
+  "get_unprocessed_snapshots",
+  "Get raw activity snapshots that haven't been turned into time entries yet. Interpret these and create entries using add_manual_entry.",
+  {
+    minutes: z.number().int().positive().optional().describe("Look back window in minutes (default: 60)"),
+  },
+  async ({ minutes }) => {
+    const lookback = minutes || 60;
+    const snapshots = getUnprocessedSnapshots(lookback);
+
+    if (snapshots.length === 0) {
+      return { content: [{ type: "text", text: "No unprocessed snapshots." }] };
     }
+
+    // Group by timestamp (snapshots taken at the same time form a capture group)
+    const groups = new Map<string, typeof snapshots>();
+    for (const s of snapshots) {
+      const key = s.timestamp;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(s);
+    }
+
+    let result = `Found ${snapshots.length} unprocessed snapshot(s) in ${groups.size} capture group(s):\n\n`;
+    for (const [timestamp, snaps] of groups) {
+      const time = new Date(timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+      result += `--- ${time} (IDs: ${snaps.map(s => s.id).join(",")}) ---\n`;
+      for (const s of snaps) {
+        result += `  [${s.collector}] ${s.raw_data}\n`;
+      }
+      result += `\n`;
+    }
+    result += `Interpret each capture group and create time entries using add_manual_entry. Include snapshot_ids to link them.`;
 
     return { content: [{ type: "text", text: result }] };
   }
@@ -496,8 +517,9 @@ server.tool(
     project_id: z.string().optional().describe("Clockify project ID"),
     task_name: z.string().optional().describe("Task name"),
     task_id: z.string().optional().describe("Task ID"),
+    snapshot_ids: z.string().optional().describe("Comma-separated snapshot IDs this entry was created from"),
   },
-  async ({ description, start_time, end_time, project_name, project_id, task_name, task_id }) => {
+  async ({ description, start_time, end_time, project_name, project_id, task_name, task_id, snapshot_ids }) => {
     const { insertEntry } = await import("./db.js");
 
     // Handle simple HH:MM format — convert to today's ISO
@@ -517,7 +539,7 @@ server.tool(
       task_id: task_id || null,
       task_name: task_name || null,
       status: "draft" as const,
-      snapshot_ids: null,
+      snapshot_ids: snapshot_ids || null,
     };
 
     const id = insertEntry(entry);
@@ -548,16 +570,15 @@ await server.connect(transport);
         await server.sendLoggingMessage({ level: "debug", data: `Idle ${Math.floor(idleSeconds / 60)}m — skipping capture.` });
         return;
       }
-      await takeSnapshot();
-      const entry = await processSnapshots();
-      if (entry) {
+      const snaps = await takeSnapshot();
+      if (snaps.length > 0) {
         await server.sendLoggingMessage({
           level: "info",
-          data: `Captured: "${entry.description}" (${entry.project_name || "no project"})`,
+          data: `Captured ${snaps.length} snapshot(s) — use get_unprocessed_snapshots to interpret.`,
         });
       }
     } catch {
-      // Silent — entries will be reviewed later
+      // Silent — snapshots will be processed later
     }
   }, interval * 60 * 1000);
 }

@@ -35,7 +35,6 @@ notepad .env     # Windows
 Add your keys to `.env`:
 
 ```env
-ANTHROPIC_API_KEY=sk-ant-xxxxx
 CLOCKIFY_API_KEY=your-clockify-api-key
 CLOCKIFY_WORKSPACE_ID=your-workspace-id
 ```
@@ -89,9 +88,9 @@ Talk to Claude naturally. No commands to memorize.
 
 ## Calendar setup
 
-Paste your Outlook calendar's iCal URL into `config.yaml` and your meetings show up automatically:
+To add your calendar, just paste your Outlook ICS link into the Claude Code chat and tell it to configure it. Claude will update `config.yaml` for you.
 
-- **Outlook** — Settings → Calendar → Shared calendars → Publish a calendar → Copy ICS link
+To get your ICS link: **Outlook** → Settings → Calendar → Shared calendars → Publish a calendar → Copy ICS link.
 
 ## What are context tags?
 
@@ -110,11 +109,10 @@ These come from your actual activity — the AI reads your window title, URL, or
 
 ## Requirements
 
+- **[Claude Code](https://claude.ai/claude-code)** — this project runs as an MCP server inside Claude Code. You need an active Claude Code subscription (Pro, Team, or Enterprise). Install it first if you haven't: `npm install -g @anthropic-ai/claude-code`
 - Node.js 18+
 - macOS
 - [Clockify](https://clockify.me) account
-- [Anthropic API key](https://console.anthropic.com)
-- [Claude Code](https://claude.ai/claude-code)
 
 ## License
 

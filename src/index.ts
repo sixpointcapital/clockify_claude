@@ -3,7 +3,7 @@ import { Command } from "commander";
 import { config as dotenvConfig } from "dotenv";
 import cron from "node-cron";
 import { loadConfig } from "./config.js";
-import { captureCycle, takeSnapshot } from "./capture.js";
+import { takeSnapshot } from "./capture.js";
 import { reviewEntries, showStatus } from "./review.js";
 import { publishEntries, exportCsv } from "./publish.js";
 
@@ -19,7 +19,7 @@ program
 
 program
   .command("start")
-  .description("Start capturing activity at the configured interval")
+  .description("Start capturing activity snapshots at the configured interval")
   .action(async () => {
     const config = loadConfig();
     const intervalMin = config.capture_interval_minutes;
@@ -29,20 +29,26 @@ program
     console.log("Press Ctrl+C to stop.\n");
 
     // Run immediately
-    await captureCycle();
+    const snapshots = await takeSnapshot();
+    console.log(`Took ${snapshots.length} snapshot(s).`);
 
     // Then on schedule
     const cronExpr = `*/${intervalMin} * * * *`;
     cron.schedule(cronExpr, async () => {
-      await captureCycle();
+      const snaps = await takeSnapshot();
+      console.log(`[${new Date().toLocaleTimeString()}] Took ${snaps.length} snapshot(s).`);
     });
   });
 
 program
   .command("capture")
-  .description("Run a single capture cycle (snapshot + interpret)")
+  .description("Take a snapshot of current activity")
   .action(async () => {
-    await captureCycle();
+    const snapshots = await takeSnapshot();
+    console.log(`Took ${snapshots.length} snapshot(s):`);
+    for (const s of snapshots) {
+      console.log(`  [${s.collector}] ${s.raw_data}`);
+    }
   });
 
 program

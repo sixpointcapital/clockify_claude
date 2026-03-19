@@ -124,3 +124,24 @@ export function getRecentSnapshots(minutes: number): Snapshot[] {
   const since = new Date(Date.now() - minutes * 60 * 1000).toISOString();
   return db.prepare("SELECT * FROM snapshots WHERE timestamp >= ? ORDER BY timestamp").all(since) as Snapshot[];
 }
+
+/**
+ * Returns snapshots from the last N minutes that are not linked to any entry.
+ */
+export function getUnprocessedSnapshots(minutes: number): Snapshot[] {
+  const db = getDb();
+  const since = new Date(Date.now() - minutes * 60 * 1000).toISOString();
+
+  // Get all snapshot IDs that are already linked to entries
+  const entries = db.prepare("SELECT snapshot_ids FROM entries WHERE snapshot_ids IS NOT NULL").all() as { snapshot_ids: string }[];
+  const linkedIds = new Set<number>();
+  for (const e of entries) {
+    for (const id of e.snapshot_ids.split(",")) {
+      const n = parseInt(id.trim(), 10);
+      if (!isNaN(n)) linkedIds.add(n);
+    }
+  }
+
+  const all = db.prepare("SELECT * FROM snapshots WHERE timestamp >= ? ORDER BY timestamp").all(since) as Snapshot[];
+  return all.filter(s => !linkedIds.has(s.id!));
+}

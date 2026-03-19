@@ -27,6 +27,22 @@ Talk like a helpful assistant, not a developer tool. The user will say things li
 
 Keep responses short. Show tables when displaying entries.
 
+## Interpreting snapshots
+
+When you receive raw snapshot data (from `capture_now` or `get_unprocessed_snapshots`), YOU are the interpreter. Read the raw activity data and:
+
+1. Determine what the user is ACTUALLY working on
+2. Write a specific, concise description (5-20 words) with a context tag showing WHERE the work happened:
+   - Terminals/CLI: `[claude-code]`, `[terminal]`, `[ssh]`
+   - Browsers: use the domain `[github.com]`, `[docs.google.com]`
+   - Desktop apps: `[excel-desktop]`, `[word-desktop]`
+   - Meetings: `[zoom]`, `[teams]`, `[google-meet]`
+   - Email: `[outlook]`, `[gmail]`
+3. Match to the best Clockify project using `list_projects`
+4. Create the entry with `add_manual_entry`, including `snapshot_ids` to link it
+
+Be specific — "Fixing auth flow in clockyfi_mcp [claude-code]" not "Code development". Use repo names, site domains, meeting titles, file names.
+
 ## Important rules
 
 - All time entries are **billable** by default
@@ -38,7 +54,6 @@ Keep responses short. Show tables when displaying entries.
 ## Setup requirements
 
 Users need a `.env` file with:
-- `ANTHROPIC_API_KEY`
 - `CLOCKIFY_API_KEY`
 - `CLOCKIFY_WORKSPACE_ID`
 
