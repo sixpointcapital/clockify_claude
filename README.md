@@ -27,7 +27,9 @@ That's it. Three hours of work, logged in two sentences.
 git clone https://github.com/sixpointcapital/clockify_claude.git
 cd clockify_claude
 npm install
-cp .env.example .env   # add your API keys
+cp .env.example .env    # Set up your environment variables
+open .env        # macOS
+notepad .env     # Windows
 ```
 
 Add your keys to `.env`:
