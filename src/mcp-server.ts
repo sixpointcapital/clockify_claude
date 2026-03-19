@@ -81,9 +81,11 @@ server.tool(
         await takeSnapshot();
         const entry = await processSnapshots();
         if (entry) {
+          const start = new Date(entry.start_time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+          const end = new Date(entry.end_time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
           await server.sendLoggingMessage({
             level: "info",
-            data: `Captured: "${entry.description}" (${entry.project_name || "no project"})`,
+            data: `${start} - ${end} | ${entry.description} | ${entry.project_name || "no project"}`,
           });
         }
       } catch {
