@@ -12,7 +12,7 @@ You: status
 | ID | Time              | Description                                          | Project | Status |
 |----|-------------------|------------------------------------------------------|---------|--------|
 | 1  | 09:00 AM-09:30 AM | Fixing auth flow in clockyfi repo [claude-code]      | IT OPs  | draft  |
-| 2  | 09:30 AM-10:00 AM | Team standup with engineering [zoom]                 | IT OPs  | draft  |
+| 2  | 09:30 AM-10:00 AM | Team standup with engineering [teams]                 | IT OPs  | draft  |
 | 3  | 10:00 AM-10:30 AM | Reviewing dashboard changes [yourapp.company.com]        | IT OPs  | draft  |
 
 You: approve all and publish
@@ -100,7 +100,7 @@ Every entry includes a tag showing *where* you worked:
 | `[claude-code]` | Terminal / CLI development |
 | `[yourapp.company.com]` | Browser on that domain |
 | `[excel-desktop]` | Desktop Excel |
-| `[zoom]` | Zoom meeting |
+| `[teams]` | Zoom meeting |
 | `[slack]` | Slack conversation |
 | `[github.com]` | GitHub in browser |
 
