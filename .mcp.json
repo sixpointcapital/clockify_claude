@@ -3,7 +3,7 @@
     "clockyfi": {
       "command": "npx",
       "args": ["tsx", "src/mcp-server.ts"],
-      "cwd": "/Users/juanpabloalfonsosanchez/clockyfi_mcp"
+      "cwd": "."
     }
   }
 }
